@@ -15,16 +15,21 @@ curl -sL https://raw.githubusercontent.com/machalex/ia-tech-rice/main/install.sh
 **Le script fait tout automatiquement :**
 1. 📦 Installe Docker et Docker Compose si nécessaire
 2. 📥 Télécharge l'application
-3. ❓ Demande votre domaine (ex: monsite.com)
-4. 📧 Demande votre email admin (pour notifications SSL)
+3. ❓ Choix : Production (avec domaine) ou Local (localhost:8080)
+4. 📧 Demande votre email admin (pour notifications SSL si production)
 5. 🔐 Génère des mots de passe sécurisés
 6. 🚀 Démarre l'application avec SSL automatique
 
-**C'est tout !** Votre application sera accessible sur `https://votre-domaine.com`
+**C'est tout !** Votre application sera accessible sur :
+- **Production** : `https://votre-domaine.com`
+- **Local** : `http://localhost:8080`
 
 ## ⚠️ Configuration DNS Importante
 
-**Avant de lancer l'installation**, assurez-vous que votre domaine pointe vers votre serveur :
+**⚠️ Uniquement pour installation en production avec domaine.**  
+**Pour utilisation locale, Docker suffit - pas de DNS requis.**
+
+**Avant de lancer l'installation en production**, assurez-vous que votre domaine pointe vers votre serveur :
 
 1. **Ajoutez un enregistrement DNS :**
    - Type : `A` 
