@@ -1,0 +1,56 @@
+services:
+  # Base de données PostgreSQL
+  rice-db:
+    image: postgres:15-alpine
+    container_name: rice-db
+    environment:
+      POSTGRES_DB: rice_db
+      POSTGRES_USER: rice_user
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-rice_password_2024}
+    ports:
+      - "5433:5432"
+    volumes:
+      - rice_db_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - rice-network
+    restart: unless-stopped
+
+  # API Backend Node.js
+  rice-backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: rice-backend
+    environment:
+      DATABASE_URL: postgresql://rice_user:${DB_PASSWORD:-rice_password_2024}@rice-db:5432/rice_db
+      PORT: 3001
+      NODE_ENV: development
+      JWT_SECRET: ${JWT_SECRET:-your-secret-key-change-in-production}
+    depends_on:
+      - rice-db
+    networks:
+      - rice-network
+    restart: unless-stopped
+
+  # Frontend React
+  rice-frontend:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: rice-frontend
+    ports:
+      - "${FRONTEND_PORT:-8080}:80"
+    depends_on:
+      - rice-backend
+    networks:
+      - rice-network
+    restart: unless-stopped
+
+volumes:
+  rice_db_data:
+    driver: local
+
+networks:
+  rice-network:
+    driver: bridge

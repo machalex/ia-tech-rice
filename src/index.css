@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  background: transparent;
+}
+
+body {
+  background-color: #000000 !important;
+}
+
+body, html {
+  background-color: #000000 !important;
+  margin: 0;
+  padding: 0;
+}
+
+#root {
+  background-color: #000000 !important;
+  min-height: 100vh;
+}

@@ -1,0 +1,97 @@
+services:
+  # Base de données PostgreSQL
+  rice-db:
+    image: postgres:15-alpine
+    container_name: rice-db
+    environment:
+      POSTGRES_DB: rice_db
+      POSTGRES_USER: rice_user
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-rice_password_2024}
+    ports:
+      - "5433:5432"
+    volumes:
+      - rice_db_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - rice-network
+    restart: unless-stopped
+
+  # API Backend Node.js
+  rice-backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: rice-backend
+    environment:
+      DATABASE_URL: postgresql://rice_user:${DB_PASSWORD:-rice_password_2024}@rice-db:5432/rice_db
+      PORT: 3001
+      NODE_ENV: production
+      JWT_SECRET: ${JWT_SECRET:-your-secret-key-change-in-production}
+    depends_on:
+      - rice-db
+    networks:
+      - rice-network
+    restart: unless-stopped
+
+  # Frontend React
+  rice-frontend:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: rice-frontend
+    ports:
+      - "${FRONTEND_PORT:-8080}:80"
+    depends_on:
+      - rice-backend
+    networks:
+      - rice-network
+    restart: unless-stopped
+
+  # Reverse Proxy Nginx avec SSL automatique
+  rice-proxy:
+    image: nginx:alpine
+    container_name: rice-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx-proxy.conf:/etc/nginx/nginx.conf
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - rice-frontend
+    networks:
+      - rice-network
+    restart: unless-stopped
+
+  # Certbot pour SSL automatique
+  rice-certbot:
+    image: certbot/certbot
+    container_name: rice-certbot
+    volumes:
+      - ./ssl:/etc/letsencrypt:rw
+      - ./certbot-www:/var/www/certbot:rw
+    command: >-
+      sh -c "
+      if [ ! -f /etc/letsencrypt/live/${DOMAIN}/fullchain.pem ]; then
+        certbot certonly --webroot
+        --webroot-path=/var/www/certbot
+        --email=${ADMIN_EMAIL}
+        --agree-tos
+        --no-eff-email
+        -d ${DOMAIN}
+      fi &&
+      while :; do
+        sleep 12h & wait $!;
+        certbot renew;
+      done"
+    networks:
+      - rice-network
+    restart: unless-stopped
+
+volumes:
+  rice_db_data:
+    driver: local
+
+networks:
+  rice-network:
+    driver: bridge
