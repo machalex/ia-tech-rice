@@ -22,6 +22,34 @@ curl -sL https://raw.githubusercontent.com/machalex/ia-tech-rice/main/install.sh
 
 **C'est tout !** Votre application sera accessible sur `https://votre-domaine.com`
 
+## ⚠️ Configuration DNS Importante
+
+**Avant de lancer l'installation**, assurez-vous que votre domaine pointe vers votre serveur :
+
+1. **Ajoutez un enregistrement DNS :**
+   - Type : `A` 
+   - Nom : `@` (pour domaine principal) ou `sous-domaine` (pour sous-domaine)
+   - Valeur : `IP.DE.VOTRE.SERVEUR`
+   - TTL : 300 (optionnel)
+
+2. **Exemples :**
+   ```
+   # Domaine principal
+   monsite.com → 192.168.1.100
+   
+   # Sous-domaine  
+   rice.monsite.com → 192.168.1.100
+   ```
+
+3. **Vérifiez la propagation :**
+   ```bash
+   nslookup votre-domaine.com
+   # ou
+   dig votre-domaine.com
+   ```
+
+**⏱️ La propagation DNS peut prendre jusqu'à 24h.** Le certificat SSL ne pourra être généré qu'une fois le DNS configuré.
+
 ## 📊 Fonctionnalités
 
 - **Dashboard interactif** avec métriques en temps réel
