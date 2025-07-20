@@ -9,7 +9,7 @@ Un outil interactif basé sur la méthodologie RICE pour prioriser vos tâches d
 Installation simple en une commande avec Docker :
 
 ```bash
-curl -sL https://raw.githubusercontent.com/votre-nom/rice-tool/main/install.sh | bash
+curl -sL https://raw.githubusercontent.com/machalex/ia-tech-rice/main/install.sh | bash
 ```
 
 **Le script fait tout automatiquement :**
@@ -21,6 +21,32 @@ curl -sL https://raw.githubusercontent.com/votre-nom/rice-tool/main/install.sh |
 6. 🚀 Démarre l'application avec SSL automatique
 
 **C'est tout !** Votre application sera accessible sur `https://votre-domaine.com`
+
+## 🔄 Développement avec Git Flow
+
+Ce projet utilise Git Flow pour organiser le développement :
+
+### Structure des branches
+- `main` : Version en production
+- `develop` : Branche de développement 
+- `feature/*` : Nouvelles fonctionnalités
+- `release/*` : Préparation des releases
+- `hotfix/*` : Corrections urgentes
+
+### Commandes courantes
+```bash
+# Nouvelle fonctionnalité
+git flow feature start ma-fonctionnalite
+git flow feature finish ma-fonctionnalite
+
+# Nouvelle release  
+git flow release start 1.2.0
+git flow release finish 1.2.0
+
+# Hotfix urgent
+git flow hotfix start fix-critique
+git flow hotfix finish fix-critique
+```
 
 ## 📊 Fonctionnalités
 

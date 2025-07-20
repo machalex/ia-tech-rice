@@ -24,20 +24,20 @@ fi
 
 # Téléchargement du projet
 echo "📥 Téléchargement de RICE Tool..."
-if [ -d "rice-tool" ]; then
-    echo "⚠️  Le dossier rice-tool existe déjà"
+if [ -d "ia-tech-rice" ]; then
+    echo "⚠️  Le dossier ia-tech-rice existe déjà"
     read -p "Voulez-vous le supprimer et recommencer ? (y/N): " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
-        rm -rf rice-tool
+        rm -rf ia-tech-rice
     else
         echo "❌ Installation annulée"
         exit 1
     fi
 fi
 
-git clone https://github.com/votre-nom/rice-tool.git
-cd rice-tool
+git clone https://github.com/machalex/ia-tech-rice.git
+cd ia-tech-rice
 
 # Questions à l'utilisateur
 echo ""
