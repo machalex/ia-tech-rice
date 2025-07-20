@@ -54,7 +54,7 @@ git flow hotfix finish fix-critique
 - **Matrice Impact/Effort** avec visualisation par quadrants
 - **Calcul automatique du score RICE** et du ROI
 - **Gestion des tâches** avec statuts (À faire, En cours, Automatisé)
-- **Sauvegarde locale** des données avec localStorage
+- **Sauvegarde automatique** des données avec PostgreSQL
 - **Interface responsive** optimisée pour tous les écrans
 - **Thème sombre** pour un confort d'utilisation
 
@@ -82,43 +82,6 @@ Score = (Temps économisé × Impact × Faisabilité) / Difficulté
 - **Git** pour le téléchargement
 - **Certbot** (optionnel, pour SSL)
 
-### Configuration Nginx manuelle
-
-Créer `/etc/nginx/sites-available/votre-domaine.com` :
-
-```nginx
-server {
-    listen 80;
-    server_name votre-domaine.com;
-    
-    root /var/www/votre-domaine.com/build;
-    index index.html;
-    
-    # Gestion du routing React
-    location / {
-        try_files $uri $uri/ /index.html;
-        add_header X-Frame-Options "SAMEORIGIN" always;
-        add_header X-Content-Type-Options "nosniff" always;
-        add_header X-XSS-Protection "1; mode=block" always;
-    }
-    
-    # Gestion des fichiers statiques
-    location /static/ {
-        expires 1y;
-        add_header Cache-Control "public, immutable";
-    }
-    
-    # Optimisations
-    gzip on;
-    gzip_types text/plain text/css application/json application/javascript text/xml application/xml;
-}
-```
-
-Activer le site :
-```bash
-sudo ln -s /etc/nginx/sites-available/votre-domaine.com /etc/nginx/sites-enabled/
-sudo nginx -t && sudo systemctl reload nginx
-```
 
 ## 📱 Utilisation
 
@@ -185,20 +148,16 @@ Remplacer l'URL dans le footer du composant.
 ## 🔄 Mise à jour
 
 ```bash
-cd /var/www/votre-domaine.com
+cd ia-tech-rice
 git pull origin main
-npm install
-npm run build
-sudo systemctl reload nginx
+docker-compose build --no-cache
+docker-compose up -d
 ```
 
 ## 🗄️ Persistance des données
 
-### Version standalone (localStorage)
-Les données sont stockées localement dans le navigateur via localStorage.
-
-### Version Docker (PostgreSQL)
-Les données sont stockées dans une base PostgreSQL avec un volume Docker persistant.
+Les données sont stockées dans une base PostgreSQL avec un volume Docker persistant. 
+Vos données sont automatiquement sauvegardées même lors des redémarrages.
 
 #### Sauvegarde Docker
 ```bash
@@ -259,16 +218,7 @@ add_header X-XSS-Protection "1; mode=block" always;
 
 ## 📊 Architecture
 
-### Version standalone
-```
-┌─────────────────┐    ┌─────────────────┐
-│   React App     │    │     Nginx       │
-│  (Frontend)     │◄───┤  (Web Server)   │
-│   localStorage  │    │                 │
-└─────────────────┘    └─────────────────┘
-```
-
-### Version Docker
+### Architecture Docker
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │   React App     │    │   Node.js API   │    │   PostgreSQL    │
