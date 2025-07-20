@@ -149,8 +149,6 @@ style={{color: '#VOTRE_COULEUR'}}
 style={{background: 'linear-gradient(135deg, #24C4E1, #VOTRE_COULEUR)'}}
 ```
 
-#### Modifier le logo
-Remplacer l'URL dans le footer du composant.
 
 ## 🔄 Mise à jour
 
