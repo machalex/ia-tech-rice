@@ -2,6 +2,15 @@
 
 set -e
 
+# Détection si le script est exécuté via curl | bash
+if [ ! -t 0 ]; then
+    # Exécuté via pipe (curl | bash) - forcer /dev/tty
+    USE_TTY=true
+else
+    # Exécuté localement - entrée standard normale
+    USE_TTY=false
+fi
+
 echo "🚀 Installation de RICE Tool"
 echo "=============================="
 
@@ -50,7 +59,12 @@ echo "1) 🌐 Production (avec domaine et SSL)"
 echo "2) 💻 Local (développement, localhost:8080)"
 
 # Lecture du choix utilisateur
-read -p "Votre choix [1-2]: " MODE_CHOICE
+if [ "$USE_TTY" = true ]; then
+    exec < /dev/tty
+    read -p "Votre choix [1-2]: " MODE_CHOICE
+else
+    read -p "Votre choix [1-2]: " MODE_CHOICE
+fi
 
 if [[ "$MODE_CHOICE" == "2" ]]; then
     # Mode local
