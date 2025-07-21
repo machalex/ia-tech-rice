@@ -124,11 +124,31 @@ JWT_SECRET=JWT_SECRET_VALUE
 FRONTEND_PORT=8080
 EOF_CONFIG
 
-# Remplacement des valeurs
-sed -i "s/DOMAIN_VALUE/${DOMAIN}/g" .env
-sed -i "s/ADMIN_EMAIL_VALUE/${ADMIN_EMAIL}/g" .env
-sed -i "s/DB_PASSWORD_VALUE/${DB_PASSWORD}/g" .env
-sed -i "s|JWT_SECRET_VALUE|${JWT_SECRET}|g" .env
+# Remplacement des valeurs (compatible macOS, Linux et Windows)
+# Détection de l'OS
+case "$OSTYPE" in
+    darwin*)
+        # macOS
+        sed -i "" "s/DOMAIN_VALUE/${DOMAIN}/g" .env
+        sed -i "" "s/ADMIN_EMAIL_VALUE/${ADMIN_EMAIL}/g" .env
+        sed -i "" "s/DB_PASSWORD_VALUE/${DB_PASSWORD}/g" .env
+        sed -i "" "s|JWT_SECRET_VALUE|${JWT_SECRET}|g" .env
+        ;;
+    msys*|cygwin*|mingw*)
+        # Windows (Git Bash/MSYS2/Cygwin)
+        sed -i "s/DOMAIN_VALUE/${DOMAIN}/g" .env
+        sed -i "s/ADMIN_EMAIL_VALUE/${ADMIN_EMAIL}/g" .env
+        sed -i "s/DB_PASSWORD_VALUE/${DB_PASSWORD}/g" .env
+        sed -i "s|JWT_SECRET_VALUE|${JWT_SECRET}|g" .env
+        ;;
+    *)
+        # Linux et autres Unix
+        sed -i "s/DOMAIN_VALUE/${DOMAIN}/g" .env
+        sed -i "s/ADMIN_EMAIL_VALUE/${ADMIN_EMAIL}/g" .env
+        sed -i "s/DB_PASSWORD_VALUE/${DB_PASSWORD}/g" .env
+        sed -i "s|JWT_SECRET_VALUE|${JWT_SECRET}|g" .env
+        ;;
+esac
 
 echo "✅ Configuration créée dans .env"
 
