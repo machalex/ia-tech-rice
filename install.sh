@@ -35,7 +35,11 @@ fi
 echo "📥 Téléchargement de RICE Tool..."
 if [ -d "ia-tech-rice" ]; then
     echo "⚠️  Le dossier ia-tech-rice existe déjà"
-    read -p "Voulez-vous le supprimer et recommencer ? (y/N): " -n 1 -r
+    if [ "$USE_TTY" = true ]; then
+        read -p "Voulez-vous le supprimer et recommencer ? (y/N): " -n 1 -r < /dev/tty
+    else
+        read -p "Voulez-vous le supprimer et recommencer ? (y/N): " -n 1 -r
+    fi
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         rm -rf ia-tech-rice
@@ -60,8 +64,7 @@ echo "2) 💻 Local (développement, localhost:8080)"
 
 # Lecture du choix utilisateur
 if [ "$USE_TTY" = true ]; then
-    exec < /dev/tty
-    read -p "Votre choix [1-2]: " MODE_CHOICE
+    read -p "Votre choix [1-2]: " MODE_CHOICE < /dev/tty
 else
     read -p "Votre choix [1-2]: " MODE_CHOICE
 fi
