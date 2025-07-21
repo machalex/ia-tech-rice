@@ -26,8 +26,7 @@ fi
 echo "📥 Téléchargement de RICE Tool..."
 if [ -d "ia-tech-rice" ]; then
     echo "⚠️  Le dossier ia-tech-rice existe déjà"
-    exec < /dev/tty
-    read -p "Voulez-vous le supprimer et recommencer ? (y/N): " -n 1 -r
+    read -p "Voulez-vous le supprimer et recommencer ? (y/N): " -n 1 -r REPLY < /dev/tty
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         rm -rf ia-tech-rice
@@ -51,8 +50,7 @@ echo "1) 🌐 Production (avec domaine et SSL)"
 echo "2) 💻 Local (développement, localhost:8080)"
 
 # Force la lecture depuis le terminal
-exec < /dev/tty
-read -p "Votre choix [1-2]: " MODE_CHOICE
+read -p "Votre choix [1-2]: " MODE_CHOICE < /dev/tty
 
 if [[ "$MODE_CHOICE" == "2" ]]; then
     # Mode local
@@ -63,8 +61,7 @@ else
     # Mode production
     # Domaine
     while true; do
-        exec < /dev/tty
-        read -p "🌐 Votre domaine (ex: monsite.com): " DOMAIN
+        read -p "🌐 Votre domaine (ex: monsite.com): " DOMAIN < /dev/tty
         if [[ $DOMAIN =~ ^[a-zA-Z0-9][a-zA-Z0-9\.-]*[a-zA-Z0-9]\.[a-zA-Z]{2,}$ ]]; then
             break
         else
@@ -74,8 +71,7 @@ else
 
     # Email admin
     while true; do
-        exec < /dev/tty
-        read -p "📧 Email administrateur (notifications SSL): " ADMIN_EMAIL
+        read -p "📧 Email administrateur (notifications SSL): " ADMIN_EMAIL < /dev/tty
         if [[ $ADMIN_EMAIL =~ ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$ ]]; then
             break
         else
