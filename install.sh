@@ -26,7 +26,8 @@ fi
 echo "📥 Téléchargement de RICE Tool..."
 if [ -d "ia-tech-rice" ]; then
     echo "⚠️  Le dossier ia-tech-rice existe déjà"
-    read -p "Voulez-vous le supprimer et recommencer ? (y/N): " -n 1 -r REPLY < /dev/tty
+    exec < /dev/tty
+    read -p "Voulez-vous le supprimer et recommencer ? (y/N): " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         rm -rf ia-tech-rice
@@ -50,7 +51,8 @@ echo "1) 🌐 Production (avec domaine et SSL)"
 echo "2) 💻 Local (développement, localhost:8080)"
 
 # Force la lecture depuis le terminal
-read -p "Votre choix [1-2]: " MODE_CHOICE < /dev/tty
+exec < /dev/tty
+read -p "Votre choix [1-2]: " MODE_CHOICE
 
 if [[ "$MODE_CHOICE" == "2" ]]; then
     # Mode local
@@ -61,7 +63,8 @@ else
     # Mode production
     # Domaine
     while true; do
-        read -p "🌐 Votre domaine (ex: monsite.com): " DOMAIN < /dev/tty
+        exec < /dev/tty
+        read -p "🌐 Votre domaine (ex: monsite.com): " DOMAIN
         if [[ $DOMAIN =~ ^[a-zA-Z0-9][a-zA-Z0-9\.-]*[a-zA-Z0-9]\.[a-zA-Z]{2,}$ ]]; then
             break
         else
@@ -71,7 +74,8 @@ else
 
     # Email admin
     while true; do
-        read -p "📧 Email administrateur (notifications SSL): " ADMIN_EMAIL < /dev/tty
+        exec < /dev/tty
+        read -p "📧 Email administrateur (notifications SSL): " ADMIN_EMAIL
         if [[ $ADMIN_EMAIL =~ ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$ ]]; then
             break
         else
@@ -92,20 +96,26 @@ JWT_SECRET=$(openssl rand -base64 64)
 # Création du fichier .env
 echo ""
 echo "📝 Création de la configuration..."
-cat > .env << EOF
+cat > .env << 'EOF_CONFIG'
 # Configuration du domaine et SSL
-DOMAIN=${DOMAIN}
-ADMIN_EMAIL=${ADMIN_EMAIL}
+DOMAIN=DOMAIN_VALUE
+ADMIN_EMAIL=ADMIN_EMAIL_VALUE
 
 # Base de données
-DB_PASSWORD=${DB_PASSWORD}
+DB_PASSWORD=DB_PASSWORD_VALUE
 
 # JWT Secret
-JWT_SECRET=${JWT_SECRET}
+JWT_SECRET=JWT_SECRET_VALUE
 
 # Port du frontend
 FRONTEND_PORT=8080
-EOF
+EOF_CONFIG
+
+# Remplacement des valeurs
+sed -i "s/DOMAIN_VALUE/${DOMAIN}/g" .env
+sed -i "s/ADMIN_EMAIL_VALUE/${ADMIN_EMAIL}/g" .env
+sed -i "s/DB_PASSWORD_VALUE/${DB_PASSWORD}/g" .env
+sed -i "s|JWT_SECRET_VALUE|${JWT_SECRET}|g" .env
 
 echo "✅ Configuration créée dans .env"
 
@@ -113,13 +123,27 @@ echo "✅ Configuration créée dans .env"
 echo ""
 echo "🚀 Démarrage de l'application..."
 
+# Vérification que Docker fonctionne
+if ! docker info >/dev/null 2>&1; then
+    echo "⚠️  Docker n'est pas encore prêt. Redémarrez votre terminal et relancez le script."
+    exit 1
+fi
+
 if [[ "$MODE_CHOICE" == "2" ]]; then
     # Mode local - utilise docker-compose.local.yml
     echo "Mode local : utilisation de docker-compose.local.yml"
+    if [ ! -f "docker-compose.local.yml" ]; then
+        echo "❌ Fichier docker-compose.local.yml manquant"
+        exit 1
+    fi
     docker-compose -f docker-compose.local.yml up -d
 else
     # Mode production - utilise docker-compose.yml avec SSL
     echo "Mode production : configuration SSL automatique"
+    if [ ! -f "docker-compose.yml" ]; then
+        echo "❌ Fichier docker-compose.yml manquant"
+        exit 1
+    fi
     mkdir -p ssl certbot-www
     docker-compose up -d
 fi
