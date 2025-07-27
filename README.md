@@ -125,7 +125,7 @@ Score = (Temps économisé × Impact × Faisabilité) / Difficulté
 
 ## 🔧 Commandes de Gestion
 
-### Mode Production (par défaut)
+### Mode Local (services de base)
 ```bash
 # Voir les logs en temps réel
 docker-compose logs -f
@@ -140,16 +140,16 @@ docker-compose up -d
 ./setup.sh
 ```
 
-### Mode Local
+### Mode Production (avec SSL)
 ```bash
 # Voir les logs en temps réel
-docker-compose -f docker-compose.local.yml logs -f
+docker-compose --profile production logs -f
 
 # Arrêter l'application
-docker-compose -f docker-compose.local.yml down
+docker-compose --profile production down
 
 # Redémarrer l'application
-docker-compose -f docker-compose.local.yml up -d
+docker-compose --profile production up -d
 ```
 
 ## ⚙️ Configuration Avancée
