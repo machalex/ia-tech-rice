@@ -4,25 +4,40 @@ Un outil interactif basé sur la méthodologie RICE pour prioriser vos tâches d
 
 ![RICE Tool Dashboard](https://via.placeholder.com/800x400/24C4E1/FFFFFF?text=RICE+Tool+Dashboard)
 
-## 🚀 Installation
+## 🚀 Installation (Comme n8n)
 
-Installation simple en une commande avec Docker :
+### Installation Rapide (1 commande)
 
 ```bash
-curl -sL https://raw.githubusercontent.com/machalex/ia-tech-rice/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/machalex/ia-tech-rice/main/quick-install.sh | bash
 ```
 
-**Le script fait tout automatiquement :**
-1. 📦 Installe Docker et Docker Compose si nécessaire
-2. 📥 Télécharge l'application
-3. ❓ Choix : Production (avec domaine) ou Local (localhost:8080)
-4. 📧 Demande votre email admin (pour notifications SSL si production)
-5. 🔐 Génère des mots de passe sécurisés
-6. 🚀 Démarre l'application avec SSL automatique
+**Cette commande fait TOUT automatiquement :**
+- ✅ Installe Docker si nécessaire
+- ✅ Télécharge RICE Tool
+- ✅ Génère mots de passe et secrets sécurisés  
+- ✅ Lance l'application sur http://localhost:8080
 
-**C'est tout !** Votre application sera accessible sur :
-- **Production** : `https://votre-domaine.com`
-- **Local** : `http://localhost:8080`
+### Installation Personnalisée
+
+Pour production ou configuration spécifique :
+
+```bash
+git clone https://github.com/machalex/ia-tech-rice.git
+cd ia-tech-rice
+cp .env.example .env
+# Éditer .env (seulement 3 variables!)
+./install.sh
+```
+
+**Fichier .env ultra-simple :**
+```bash
+MODE=local                    # ou 'production' 
+DOMAIN=localhost             # ou 'monsite.com'
+ADMIN_EMAIL=admin@localhost  # ou votre email
+```
+
+**Tout le reste est automatique :** mots de passe, ports, secrets, SSL.
 
 ## ⚠️ Configuration DNS Importante
 
@@ -111,31 +126,34 @@ Score = (Temps économisé × Impact × Faisabilité) / Difficulté
 
 ## 🔧 Configuration
 
-### Variables d'environnement
+### Variables d'environnement (Ultra-simplifiée)
 
-Créer un fichier `.env` basé sur `.env.example` :
+**Configuration manuelle :** Seulement 3 variables à configurer !
+
+```bash
+cp .env.example .env
+nano .env
+```
+
 ```env
-# Configuration du domaine et SSL
-DOMAIN=votre-domaine.com
-ADMIN_EMAIL=admin@votre-domaine.com
+# Configuration minimale (comme n8n)
+MODE=local                    # 'local' ou 'production'
+DOMAIN=localhost             # localhost ou votre-domaine.com  
+ADMIN_EMAIL=admin@localhost  # Email administrateur
+```
 
-# Base de données
-DB_PASSWORD=rice_password_2024
+**Variables automatiques :** Générées à l'installation
+- `DB_PASSWORD` : Mot de passe sécurisé (32 chars)
+- `JWT_SECRET` : Clé JWT sécurisée (64 chars)  
+- `FRONTEND_PORT`, `BACKEND_PORT`, `DB_PORT` : Ports par défaut
 
-# JWT Secret (IMPORTANT: Changez cette valeur en production)
-JWT_SECRET=your-very-secure-secret-key-change-in-production
+### Personnalisation avancée (optionnel)
 
-# Port du frontend (optionnel)
-FRONTEND_PORT=8080
-
+```env
 # Configuration React (optionnel)
 REACT_APP_TITLE=RICE Tool - Mon Entreprise
 REACT_APP_DEFAULT_HOURLY_RATE=35
 ```
-
-**Variables importantes :**
-- `ADMIN_EMAIL` : Email qui recevra les notifications SSL (renouvellement certificats Let's Encrypt, etc.)
-- `DOMAIN` : Votre domaine pour la configuration SSL automatique
 
 ### Personnalisation
 

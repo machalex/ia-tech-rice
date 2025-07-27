@@ -2,15 +2,6 @@
 
 set -e
 
-# Détection si le script est exécuté via curl | bash
-if [ ! -t 0 ]; then
-    # Exécuté via pipe (curl | bash) - forcer /dev/tty
-    USE_TTY=true
-else
-    # Exécuté localement - entrée standard normale
-    USE_TTY=false
-fi
-
 echo "🚀 Installation de RICE Tool"
 echo "=============================="
 
@@ -34,127 +25,81 @@ fi
 # Téléchargement du projet
 echo "📥 Téléchargement de RICE Tool..."
 if [ -d "ia-tech-rice" ]; then
-    echo "⚠️  Le dossier ia-tech-rice existe déjà"
-    if [ "$USE_TTY" = true ]; then
-        read -p "Voulez-vous le supprimer et recommencer ? (y/N): " -n 1 -r < /dev/tty
-    else
-        read -p "Voulez-vous le supprimer et recommencer ? (y/N): " -n 1 -r
-    fi
-    echo
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-        rm -rf ia-tech-rice
-    else
-        echo "❌ Installation annulée"
-        exit 1
-    fi
+    echo "⚠️  Le dossier ia-tech-rice existe déjà - suppression automatique"
+    rm -rf ia-tech-rice
 fi
 
 git clone https://github.com/machalex/ia-tech-rice.git
 cd ia-tech-rice
 
-# Questions à l'utilisateur
+# Vérification du fichier .env
 echo ""
 echo "📋 Configuration"
 echo "================="
 
-# Mode d'installation
-echo "Choisissez le mode d'installation :"
-echo "1) 🌐 Production (avec domaine et SSL)"
-echo "2) 💻 Local (développement, localhost:8080)"
-
-# Lecture du choix utilisateur
-if [ "$USE_TTY" = true ]; then
-    read -p "Votre choix [1-2]: " MODE_CHOICE < /dev/tty
-else
-    read -p "Votre choix [1-2]: " MODE_CHOICE
+if [ ! -f ".env" ]; then
+    echo "❌ Fichier .env manquant"
+    echo "📝 Copiez .env.example vers .env et configurez vos variables:"
+    echo "   cp .env.example .env"
+    echo "   nano .env"
+    echo ""
+    echo "💡 Pour une installation rapide en mode local:"
+    echo "   MODE=local"
+    echo "   DOMAIN=localhost" 
+    echo "   DB_PASSWORD=\$(openssl rand -base64 32)"
+    echo "   JWT_SECRET=\$(openssl rand -base64 64)"
+    exit 1
 fi
 
-if [[ "$MODE_CHOICE" == "2" ]]; then
-    # Mode local
-    DOMAIN="localhost"
-    ADMIN_EMAIL="admin@localhost"
-    echo "✅ Mode local sélectionné - Application accessible sur http://localhost:8080"
-else
-    # Mode production
-    # Domaine
-    while true; do
-        read -p "🌐 Votre domaine (ex: monsite.com): " DOMAIN
-        if [[ $DOMAIN =~ ^[a-zA-Z0-9][a-zA-Z0-9\.-]*[a-zA-Z0-9]\.[a-zA-Z]{2,}$ ]]; then
-            break
-        else
-            echo "❌ Format de domaine invalide. Exemple: monsite.com"
-        fi
-    done
+# Chargement des variables d'environnement
+source .env
 
-    # Email admin
-    while true; do
-        read -p "📧 Email administrateur (notifications SSL): " ADMIN_EMAIL
-        if [[ $ADMIN_EMAIL =~ ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$ ]]; then
-            break
-        else
-            echo "❌ Format d'email invalide"
-        fi
-    done
+# Validation des variables obligatoires
+if [ -z "$MODE" ]; then
+    echo "❌ Variable MODE manquante dans .env"
+    exit 1
 fi
 
-# Mot de passe base de données
-echo ""
-echo "🔐 Génération d'un mot de passe sécurisé pour la base de données..."
-DB_PASSWORD=$(openssl rand -base64 32)
+if [ -z "$DOMAIN" ]; then
+    echo "❌ Variable DOMAIN manquante dans .env"
+    exit 1
+fi
 
-# JWT Secret
-echo "🔐 Génération d'une clé JWT sécurisée..."
-JWT_SECRET=$(openssl rand -base64 64)
+# Génération automatique des secrets s'ils n'existent pas
+echo "🔐 Génération des secrets sécurisés..."
 
-# Création du fichier .env
-echo ""
-echo "📝 Création de la configuration..."
-cat > .env << 'EOF_CONFIG'
-# Configuration du domaine et SSL
-DOMAIN=DOMAIN_VALUE
-ADMIN_EMAIL=ADMIN_EMAIL_VALUE
+if [ -z "$DB_PASSWORD" ]; then
+    DB_PASSWORD=$(openssl rand -base64 32)
+    echo "DB_PASSWORD=\"${DB_PASSWORD}\"" >> .env
+fi
 
-# Base de données
-DB_PASSWORD=DB_PASSWORD_VALUE
+if [ -z "$JWT_SECRET" ]; then
+    JWT_SECRET=$(openssl rand -base64 64)
+    echo "JWT_SECRET=\"${JWT_SECRET}\"" >> .env
+fi
 
-# JWT Secret
-JWT_SECRET=JWT_SECRET_VALUE
+# Définition des ports par défaut
+FRONTEND_PORT=${FRONTEND_PORT:-8080}
+BACKEND_PORT=${BACKEND_PORT:-3001}
+DB_PORT=${DB_PORT:-5433}
 
-# Port du frontend
-FRONTEND_PORT=8080
-EOF_CONFIG
+# Ajout des ports au .env s'ils n'y sont pas
+if ! grep -q "FRONTEND_PORT" .env; then
+    echo "FRONTEND_PORT=${FRONTEND_PORT}" >> .env
+fi
 
-# Remplacement des valeurs (compatible macOS, Linux et Windows)
-# Détection de l'OS
-case "$OSTYPE" in
-    darwin*)
-        # macOS
-        sed -i "" "s/DOMAIN_VALUE/${DOMAIN}/g" .env
-        sed -i "" "s/ADMIN_EMAIL_VALUE/${ADMIN_EMAIL}/g" .env
-        sed -i "" "s/DB_PASSWORD_VALUE/${DB_PASSWORD}/g" .env
-        sed -i "" "s|JWT_SECRET_VALUE|${JWT_SECRET}|g" .env
-        ;;
-    msys*|cygwin*|mingw*)
-        # Windows (Git Bash/MSYS2/Cygwin)
-        sed -i "s/DOMAIN_VALUE/${DOMAIN}/g" .env
-        sed -i "s/ADMIN_EMAIL_VALUE/${ADMIN_EMAIL}/g" .env
-        sed -i "s/DB_PASSWORD_VALUE/${DB_PASSWORD}/g" .env
-        sed -i "s|JWT_SECRET_VALUE|${JWT_SECRET}|g" .env
-        ;;
-    *)
-        # Linux et autres Unix
-        sed -i "s/DOMAIN_VALUE/${DOMAIN}/g" .env
-        sed -i "s/ADMIN_EMAIL_VALUE/${ADMIN_EMAIL}/g" .env
-        sed -i "s/DB_PASSWORD_VALUE/${DB_PASSWORD}/g" .env
-        sed -i "s|JWT_SECRET_VALUE|${JWT_SECRET}|g" .env
-        ;;
-esac
+if ! grep -q "BACKEND_PORT" .env; then
+    echo "BACKEND_PORT=${BACKEND_PORT}" >> .env
+fi
 
-echo "✅ Configuration créée dans .env"
+if ! grep -q "DB_PORT" .env; then
+    echo "DB_PORT=${DB_PORT}" >> .env
+fi
 
-# Démarrage selon le mode
-echo ""
-echo "🚀 Démarrage de l'application..."
+echo "✅ Configuration .env complétée"
+echo "   Mode: $MODE"
+echo "   Domaine: $DOMAIN"
+echo "   Port frontend: $FRONTEND_PORT"
 
 # Vérification que Docker fonctionne
 if ! docker info >/dev/null 2>&1; then
@@ -162,7 +107,11 @@ if ! docker info >/dev/null 2>&1; then
     exit 1
 fi
 
-if [[ "$MODE_CHOICE" == "2" ]]; then
+# Démarrage selon le mode
+echo ""
+echo "🚀 Démarrage de l'application..."
+
+if [[ "$MODE" == "local" ]]; then
     # Mode local - utilise docker-compose.local.yml
     echo "Mode local : utilisation de docker-compose.local.yml"
     if [ ! -f "docker-compose.local.yml" ]; then
@@ -181,12 +130,11 @@ else
     docker-compose up -d
 fi
 
-
 echo ""
 echo "✅ Installation terminée !"
 echo ""
 
-if [[ "$MODE_CHOICE" == "2" ]]; then
+if [[ "$MODE" == "local" ]]; then
     # Mode local
     echo "🌐 Votre application est accessible sur:"
     echo "   http://localhost:${FRONTEND_PORT:-8080}"
