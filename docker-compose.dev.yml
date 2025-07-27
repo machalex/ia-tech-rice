@@ -25,7 +25,7 @@ services:
     environment:
       DATABASE_URL: postgresql://rice_user:${DB_PASSWORD:-rice_auto_generated_pwd}@rice-db:5432/rice_db
       PORT: 3001
-      NODE_ENV: ${MODE:-production}
+      NODE_ENV: development
       JWT_SECRET: ${JWT_SECRET:-rice_jwt_auto_generated_secret_key}
     depends_on:
       - rice-db
@@ -43,47 +43,6 @@ services:
       - "${FRONTEND_PORT:-8080}:80"
     depends_on:
       - rice-backend
-    networks:
-      - rice-network
-    restart: unless-stopped
-
-  # Reverse Proxy Nginx avec SSL (production par défaut)
-  rice-proxy:
-    image: nginx:alpine
-    container_name: rice-proxy
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx-proxy.conf:/etc/nginx/nginx.conf
-      - ./ssl:/etc/nginx/ssl:ro
-    depends_on:
-      - rice-frontend
-    networks:
-      - rice-network
-    restart: unless-stopped
-
-  # Certbot pour SSL automatique (production par défaut)
-  rice-certbot:
-    image: certbot/certbot
-    container_name: rice-certbot
-    volumes:
-      - ./ssl:/etc/letsencrypt:rw
-      - ./certbot-www:/var/www/certbot:rw
-    command: >-
-      sh -c "
-      if [ ! -f /etc/letsencrypt/live/${DOMAIN}/fullchain.pem ]; then
-        certbot certonly --webroot
-        --webroot-path=/var/www/certbot
-        --email=${ADMIN_EMAIL}
-        --agree-tos
-        --no-eff-email
-        -d ${DOMAIN}
-      fi &&
-      while :; do
-        sleep 12h & wait $!;
-        certbot renew;
-      done"
     networks:
       - rice-network
     restart: unless-stopped

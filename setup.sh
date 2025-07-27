@@ -33,14 +33,14 @@ fi
 
 # Lecture du MODE depuis .env
 source .env
-MODE=${MODE:-local}
+MODE=${MODE:-production}
 
 echo ""
 echo "🚀 Lancement de l'application en mode: $MODE"
 
-if [ "$MODE" = "production" ]; then
-    echo "docker-compose --profile production up -d"
-    docker-compose --profile production up -d
+if [ "$MODE" = "local" ] || [ "$MODE" = "dev" ] || [ "$MODE" = "development" ]; then
+    echo "docker-compose -f docker-compose.dev.yml up -d"
+    docker-compose -f docker-compose.dev.yml up -d
 else
     echo "docker-compose up -d"
     docker-compose up -d
@@ -48,15 +48,15 @@ fi
 
 echo ""
 echo "✅ RICE Tool démarré !"
-if [ "$MODE" = "production" ]; then
-    echo "🌐 Accès : https://$DOMAIN"
+if [ "$MODE" = "local" ] || [ "$MODE" = "dev" ] || [ "$MODE" = "development" ]; then
+    echo "🌐 Accès : http://localhost:8080"
     echo ""
     echo "🔧 Commandes utiles :"
-    echo "   docker-compose --profile production logs -f    # Logs"
-    echo "   docker-compose --profile production down       # Arrêter"  
-    echo "   docker-compose --profile production up -d      # Redémarrer"
+    echo "   docker-compose -f docker-compose.dev.yml logs -f    # Logs"
+    echo "   docker-compose -f docker-compose.dev.yml down       # Arrêter"  
+    echo "   docker-compose -f docker-compose.dev.yml up -d      # Redémarrer"
 else
-    echo "🌐 Accès : http://localhost:8080"
+    echo "🌐 Accès : https://$DOMAIN"
     echo ""
     echo "🔧 Commandes utiles :"
     echo "   docker-compose logs -f    # Logs"

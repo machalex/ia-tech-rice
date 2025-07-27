@@ -31,9 +31,9 @@ Le `.env` contient seulement les 3 variables essentielles :
 
 ```bash
 # .env (modifiez selon vos besoins)
-DOMAIN=localhost               # votre domaine
-MODE=local                     # 'local' ou 'production'  
-ADMIN_EMAIL=admin@localhost    # votre email
+DOMAIN=monsite.com             # votre domaine
+MODE=production                # 'production' ou 'local'  
+ADMIN_EMAIL=admin@monsite.com  # votre email
 ```
 
 **Toutes les autres valeurs** (mots de passe, ports, secrets) sont **automatiques** dans docker-compose.
@@ -125,7 +125,7 @@ Score = (Temps économisé × Impact × Faisabilité) / Difficulté
 
 ## 🔧 Commandes de Gestion
 
-### Mode Local
+### Mode Production (par défaut)
 ```bash
 # Voir les logs en temps réel
 docker-compose logs -f
@@ -140,16 +140,16 @@ docker-compose up -d
 ./setup.sh
 ```
 
-### Mode Production
+### Mode Développement
 ```bash
 # Voir les logs en temps réel
-docker-compose --profile production logs -f
+docker-compose -f docker-compose.dev.yml logs -f
 
 # Arrêter l'application
-docker-compose --profile production down
+docker-compose -f docker-compose.dev.yml down
 
 # Redémarrer l'application
-docker-compose --profile production up -d
+docker-compose -f docker-compose.dev.yml up -d
 ```
 
 ## ⚙️ Configuration Avancée
