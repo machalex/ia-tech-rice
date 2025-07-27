@@ -140,16 +140,16 @@ docker-compose up -d
 ./setup.sh
 ```
 
-### Mode Développement
+### Mode Local
 ```bash
 # Voir les logs en temps réel
-docker-compose -f docker-compose.dev.yml logs -f
+docker-compose -f docker-compose.local.yml logs -f
 
 # Arrêter l'application
-docker-compose -f docker-compose.dev.yml down
+docker-compose -f docker-compose.local.yml down
 
 # Redémarrer l'application
-docker-compose -f docker-compose.dev.yml up -d
+docker-compose -f docker-compose.local.yml up -d
 ```
 
 ## ⚙️ Configuration Avancée

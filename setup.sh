@@ -38,9 +38,9 @@ MODE=${MODE:-production}
 echo ""
 echo "🚀 Lancement de l'application en mode: $MODE"
 
-if [ "$MODE" = "local" ] || [ "$MODE" = "dev" ] || [ "$MODE" = "development" ]; then
-    echo "docker-compose -f docker-compose.dev.yml up -d"
-    docker-compose -f docker-compose.dev.yml up -d
+if [ "$MODE" = "local" ]; then
+    echo "docker-compose -f docker-compose.local.yml up -d"
+    docker-compose -f docker-compose.local.yml up -d
 else
     echo "docker-compose up -d"
     docker-compose up -d
@@ -48,13 +48,13 @@ fi
 
 echo ""
 echo "✅ RICE Tool démarré !"
-if [ "$MODE" = "local" ] || [ "$MODE" = "dev" ] || [ "$MODE" = "development" ]; then
+if [ "$MODE" = "local" ]; then
     echo "🌐 Accès : http://localhost:8080"
     echo ""
     echo "🔧 Commandes utiles :"
-    echo "   docker-compose -f docker-compose.dev.yml logs -f    # Logs"
-    echo "   docker-compose -f docker-compose.dev.yml down       # Arrêter"  
-    echo "   docker-compose -f docker-compose.dev.yml up -d      # Redémarrer"
+    echo "   docker-compose -f docker-compose.local.yml logs -f    # Logs"
+    echo "   docker-compose -f docker-compose.local.yml down       # Arrêter"  
+    echo "   docker-compose -f docker-compose.local.yml up -d      # Redémarrer"
 else
     echo "🌐 Accès : https://$DOMAIN"
     echo ""
