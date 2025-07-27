@@ -18,23 +18,24 @@ cd ia-tech-rice
 
 ### Ce que fait `setup.sh`
 
-1. ✅ Crée automatiquement le fichier `.env` avec secrets sécurisés
+1. ✅ Crée un fichier `.env` avec 3 variables essentielles (domaine, mode, email)
 2. ✅ Lance `docker-compose -f docker-compose.local.yml up -d`
 3. ✅ Affiche l'URL d'accès et les commandes utiles
 
+**Les secrets sont intégrés dans docker-compose** - pas besoin de les générer !
+
 ### Configuration personnalisée (optionnel)
 
-Pour modifier le domaine ou passer en production, éditez `.env` avant `./setup.sh` :
+Le `.env` contient seulement les 3 variables essentielles :
 
 ```bash
-# .env (seulement 3 variables à configurer)
-MODE=local                    # ou 'production'
-DOMAIN=localhost             # ou 'monsite.com'
-ADMIN_EMAIL=admin@localhost  # ou votre email
-
-# Le reste est généré automatiquement : 
-# DB_PASSWORD, JWT_SECRET, ports, etc.
+# .env (modifiez selon vos besoins)
+DOMAIN=localhost               # votre domaine
+MODE=local                     # 'local' ou 'production'  
+ADMIN_EMAIL=admin@localhost    # votre email
 ```
+
+**Toutes les autres valeurs** (mots de passe, ports, secrets) sont **automatiques** dans docker-compose.
 
 ## ⚠️ Configuration DNS Importante
 

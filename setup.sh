@@ -7,25 +7,9 @@ echo "=================="
 
 # Création du fichier .env s'il n'existe pas
 if [ ! -f ".env" ]; then
-    echo "📝 Création du fichier .env..."
-    
-    # Génération des secrets
-    DB_PASSWORD=$(openssl rand -base64 32 2>/dev/null || echo "rice_$(date +%s)")
-    JWT_SECRET=$(openssl rand -base64 64 2>/dev/null || echo "jwt_secret_$(date +%s)_$(openssl rand -hex 16)")
-    
-    cat > .env << EOF
-# RICE Tool Configuration
-MODE=local
-DOMAIN=localhost
-ADMIN_EMAIL=admin@localhost
-FRONTEND_PORT=8080
-BACKEND_PORT=3001
-DB_PORT=5433
-DB_PASSWORD=${DB_PASSWORD}
-JWT_SECRET=${JWT_SECRET}
-EOF
-    
-    echo "✅ Fichier .env créé avec secrets sécurisés"
+    echo "📝 Création du fichier .env minimal..."
+    cp .env.example .env
+    echo "✅ Fichier .env créé (configuration par défaut)"
 else
     echo "✅ Fichier .env existant trouvé"
 fi
