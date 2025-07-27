@@ -4,9 +4,9 @@ Un outil interactif basé sur la méthodologie RICE pour prioriser vos tâches d
 
 ![RICE Tool Dashboard](https://via.placeholder.com/800x400/24C4E1/FFFFFF?text=RICE+Tool+Dashboard)
 
-## 🚀 Installation Ultra-Simple
+## 🚀 Installation
 
-Installation en 3 commandes (comme n8n) :
+Installation en 3 commandes :
 
 ```bash
 git clone https://github.com/machalex/ia-tech-rice.git
