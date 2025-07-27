@@ -6,7 +6,7 @@ services:
     environment:
       POSTGRES_DB: rice_db
       POSTGRES_USER: rice_user
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-rice_password_2024}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-rice_auto_generated_pwd}
     ports:
       - "5433:5432"
     volumes:
@@ -23,10 +23,10 @@ services:
       dockerfile: Dockerfile
     container_name: rice-backend
     environment:
-      DATABASE_URL: postgresql://rice_user:${DB_PASSWORD:-rice_password_2024}@rice-db:5432/rice_db
+      DATABASE_URL: postgresql://rice_user:${DB_PASSWORD:-rice_auto_generated_pwd}@rice-db:5432/rice_db
       PORT: 3001
-      NODE_ENV: production
-      JWT_SECRET: ${JWT_SECRET:-your-secret-key-change-in-production}
+      NODE_ENV: ${MODE:-local}
+      JWT_SECRET: ${JWT_SECRET:-rice_jwt_auto_generated_secret_key}
     depends_on:
       - rice-db
     networks:
@@ -47,7 +47,7 @@ services:
       - rice-network
     restart: unless-stopped
 
-  # Reverse Proxy Nginx avec SSL automatique
+  # Reverse Proxy Nginx avec SSL (production seulement)
   rice-proxy:
     image: nginx:alpine
     container_name: rice-proxy
@@ -62,8 +62,10 @@ services:
     networks:
       - rice-network
     restart: unless-stopped
+    profiles:
+      - production
 
-  # Certbot pour SSL automatique
+  # Certbot pour SSL automatique (production seulement)
   rice-certbot:
     image: certbot/certbot
     container_name: rice-certbot
@@ -87,6 +89,8 @@ services:
     networks:
       - rice-network
     restart: unless-stopped
+    profiles:
+      - production
 
 volumes:
   rice_db_data:

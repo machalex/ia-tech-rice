@@ -10,7 +10,8 @@ Un outil interactif basé sur la méthodologie RICE pour prioriser vos tâches d
 git clone https://github.com/machalex/ia-tech-rice.git
 cd ia-tech-rice
 cp .env.example .env
-# Optionnel: nano .env  (modifier DOMAIN, MODE, ADMIN_EMAIL)
+# configuration (modifier DOMAIN, MODE, ADMIN_EMAIL) : 
+nano .env  
 ./setup.sh
 ```
 
@@ -124,18 +125,31 @@ Score = (Temps économisé × Impact × Faisabilité) / Difficulté
 
 ## 🔧 Commandes de Gestion
 
+### Mode Local
 ```bash
 # Voir les logs en temps réel
-docker-compose -f docker-compose.local.yml logs -f
+docker-compose logs -f
 
 # Arrêter l'application
-docker-compose -f docker-compose.local.yml down
+docker-compose down
 
 # Redémarrer l'application
-docker-compose -f docker-compose.local.yml up -d
+docker-compose up -d
 
 # Reconfigurer (si vous modifiez .env)
 ./setup.sh
+```
+
+### Mode Production
+```bash
+# Voir les logs en temps réel
+docker-compose --profile production logs -f
+
+# Arrêter l'application
+docker-compose --profile production down
+
+# Redémarrer l'application
+docker-compose --profile production up -d
 ```
 
 ## ⚙️ Configuration Avancée

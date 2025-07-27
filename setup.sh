@@ -31,18 +31,35 @@ if ! command -v docker &> /dev/null || ! command -v docker-compose &> /dev/null;
     exit 1
 fi
 
-echo ""
-echo "🚀 Lancement de l'application..."
-echo "docker-compose -f docker-compose.local.yml up -d"
+# Lecture du MODE depuis .env
+source .env
+MODE=${MODE:-local}
 
-# Lancement direct
-docker-compose -f docker-compose.local.yml up -d
+echo ""
+echo "🚀 Lancement de l'application en mode: $MODE"
+
+if [ "$MODE" = "production" ]; then
+    echo "docker-compose --profile production up -d"
+    docker-compose --profile production up -d
+else
+    echo "docker-compose up -d"
+    docker-compose up -d
+fi
 
 echo ""
 echo "✅ RICE Tool démarré !"
-echo "🌐 Accès : http://localhost:8080"
-echo ""
-echo "🔧 Commandes utiles :"
-echo "   docker-compose -f docker-compose.local.yml logs -f    # Logs"
-echo "   docker-compose -f docker-compose.local.yml down       # Arrêter"
-echo "   docker-compose -f docker-compose.local.yml up -d      # Redémarrer"
+if [ "$MODE" = "production" ]; then
+    echo "🌐 Accès : https://$DOMAIN"
+    echo ""
+    echo "🔧 Commandes utiles :"
+    echo "   docker-compose --profile production logs -f    # Logs"
+    echo "   docker-compose --profile production down       # Arrêter"  
+    echo "   docker-compose --profile production up -d      # Redémarrer"
+else
+    echo "🌐 Accès : http://localhost:8080"
+    echo ""
+    echo "🔧 Commandes utiles :"
+    echo "   docker-compose logs -f    # Logs"
+    echo "   docker-compose down       # Arrêter"
+    echo "   docker-compose up -d      # Redémarrer"
+fi
