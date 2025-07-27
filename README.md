@@ -6,20 +6,20 @@ Un outil interactif basé sur la méthodologie RICE pour prioriser vos tâches d
 
 ## 🚀 Installation
 
-Installation en 3 commandes :
-
 ```bash
 git clone https://github.com/machalex/ia-tech-rice.git
 cd ia-tech-rice
+cp .env.example .env
+# Optionnel: nano .env  (modifier DOMAIN, MODE, ADMIN_EMAIL)
 ./setup.sh
 ```
 
-**C'est tout !** L'application sera accessible sur **http://localhost:8080**
+**L'application sera accessible sur http://localhost:8080**
 
 ### Ce que fait `setup.sh`
 
-1. ✅ Crée un fichier `.env` avec 3 variables essentielles (domaine, mode, email)
-2. ✅ Lance `docker-compose -f docker-compose.local.yml up -d`
+1. ✅ Vérifie que le fichier `.env` existe (sinon guide l'utilisateur)
+2. ✅ Lance `docker-compose -f docker-compose.local.yml up -d`  
 3. ✅ Affiche l'URL d'accès et les commandes utiles
 
 **Les secrets sont intégrés dans docker-compose** - pas besoin de les générer !
