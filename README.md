@@ -4,40 +4,37 @@ Un outil interactif basé sur la méthodologie RICE pour prioriser vos tâches d
 
 ![RICE Tool Dashboard](https://via.placeholder.com/800x400/24C4E1/FFFFFF?text=RICE+Tool+Dashboard)
 
-## 🚀 Installation (Comme n8n)
+## 🚀 Installation Ultra-Simple
 
-### Installation Rapide (1 commande)
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/machalex/ia-tech-rice/main/quick-install.sh | bash
-```
-
-**Cette commande fait TOUT automatiquement :**
-- ✅ Installe Docker si nécessaire
-- ✅ Télécharge RICE Tool
-- ✅ Génère mots de passe et secrets sécurisés  
-- ✅ Lance l'application sur http://localhost:8080
-
-### Installation Personnalisée
-
-Pour production ou configuration spécifique :
+Installation en 3 commandes (comme n8n) :
 
 ```bash
 git clone https://github.com/machalex/ia-tech-rice.git
 cd ia-tech-rice
-cp .env.example .env
-# Éditer .env (seulement 3 variables!)
-./install.sh
+./setup.sh
 ```
 
-**Fichier .env ultra-simple :**
+**C'est tout !** L'application sera accessible sur **http://localhost:8080**
+
+### Ce que fait `setup.sh`
+
+1. ✅ Crée automatiquement le fichier `.env` avec secrets sécurisés
+2. ✅ Lance `docker-compose -f docker-compose.local.yml up -d`
+3. ✅ Affiche l'URL d'accès et les commandes utiles
+
+### Configuration personnalisée (optionnel)
+
+Pour modifier le domaine ou passer en production, éditez `.env` avant `./setup.sh` :
+
 ```bash
-MODE=local                    # ou 'production' 
+# .env (seulement 3 variables à configurer)
+MODE=local                    # ou 'production'
 DOMAIN=localhost             # ou 'monsite.com'
 ADMIN_EMAIL=admin@localhost  # ou votre email
-```
 
-**Tout le reste est automatique :** mots de passe, ports, secrets, SSL.
+# Le reste est généré automatiquement : 
+# DB_PASSWORD, JWT_SECRET, ports, etc.
+```
 
 ## ⚠️ Configuration DNS Importante
 
@@ -124,33 +121,35 @@ Score = (Temps économisé × Impact × Faisabilité) / Difficulté
 - **Faisabilité** : Estimer la probabilité de réussite
 - **Difficulté** : Évaluer l'effort de développement
 
-## 🔧 Configuration
-
-### Variables d'environnement (Ultra-simplifiée)
-
-**Configuration manuelle :** Seulement 3 variables à configurer !
+## 🔧 Commandes de Gestion
 
 ```bash
-cp .env.example .env
-nano .env
+# Voir les logs en temps réel
+docker-compose -f docker-compose.local.yml logs -f
+
+# Arrêter l'application
+docker-compose -f docker-compose.local.yml down
+
+# Redémarrer l'application
+docker-compose -f docker-compose.local.yml up -d
+
+# Reconfigurer (si vous modifiez .env)
+./setup.sh
 ```
 
-```env
-# Configuration minimale (comme n8n)
-MODE=local                    # 'local' ou 'production'
-DOMAIN=localhost             # localhost ou votre-domaine.com  
-ADMIN_EMAIL=admin@localhost  # Email administrateur
-```
+## ⚙️ Configuration Avancée
 
-**Variables automatiques :** Générées à l'installation
+### Variables automatiques
+
+Le script `setup.sh` génère automatiquement :
 - `DB_PASSWORD` : Mot de passe sécurisé (32 chars)
 - `JWT_SECRET` : Clé JWT sécurisée (64 chars)  
 - `FRONTEND_PORT`, `BACKEND_PORT`, `DB_PORT` : Ports par défaut
 
-### Personnalisation avancée (optionnel)
+### Personnalisation React (optionnel)
 
 ```env
-# Configuration React (optionnel)
+# Dans .env
 REACT_APP_TITLE=RICE Tool - Mon Entreprise
 REACT_APP_DEFAULT_HOURLY_RATE=35
 ```
@@ -173,8 +172,7 @@ style={{background: 'linear-gradient(135deg, #24C4E1, #VOTRE_COULEUR)'}}
 ```bash
 cd ia-tech-rice
 git pull origin main
-docker-compose build --no-cache
-docker-compose up -d
+./setup.sh
 ```
 
 ## 🗄️ Persistance des données
