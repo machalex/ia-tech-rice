@@ -2,72 +2,124 @@
 
 Un outil interactif basé sur la méthodologie RICE pour prioriser vos tâches d'automatisation et calculer le ROI de vos projets.
 
-![RICE Tool Dashboard](https://via.placeholder.com/800x400/24C4E1/FFFFFF?text=RICE+Tool+Dashboard)
-
 ## 🚀 Installation
+
+### 📍 Installation en Local (Développement)
+
+Pour tester l'application sur votre machine locale :
 
 ```bash
 git clone https://github.com/machalex/ia-tech-rice.git
 cd ia-tech-rice
 cp .env.example .env
-# configuration (modifier DOMAIN, MODE, ADMIN_EMAIL) : 
-nano .env  
+```
+
+**Configuration du fichier `.env` pour le local :**
+```bash
+# .env
+DOMAIN=localhost
+MODE=local
+ADMIN_EMAIL=admin@localhost
+```
+
+**Démarrage :**
+```bash
 ./setup.sh
 ```
 
-**L'application sera accessible sur http://localhost:8080**
+**🌐 Accès : http://localhost:8080**
 
-### Ce que fait `setup.sh`
-
-1. ✅ Vérifie que le fichier `.env` existe (sinon guide l'utilisateur)
-2. ✅ Lance `docker-compose -f docker-compose.local.yml up -d`  
-3. ✅ Affiche l'URL d'accès et les commandes utiles
-
-**Les secrets sont intégrés dans docker-compose** - pas besoin de les générer !
-
-### Configuration personnalisée (optionnel)
-
-Le `.env` contient seulement les 3 variables essentielles :
-
+**Commandes de gestion (local) :**
 ```bash
-# .env (modifiez selon vos besoins)
-DOMAIN=monsite.com             # votre domaine
-MODE=production                # 'production' ou 'local'  
-ADMIN_EMAIL=admin@monsite.com  # votre email
+# Voir les logs
+docker-compose --profile local logs -f
+
+# Arrêter l'application
+docker-compose --profile local down
+
+# Redémarrer l'application
+docker-compose --profile local up -d
 ```
 
-**Toutes les autres valeurs** (mots de passe, ports, secrets) sont **automatiques** dans docker-compose.
+---
 
-## ⚠️ Configuration DNS Importante
+### 🌐 Installation en Production (Serveur)
 
-**⚠️ Uniquement pour installation en production avec domaine.**  
-**Pour utilisation locale, Docker suffit - pas de DNS requis.**
+Pour déployer l'application sur un serveur avec SSL automatique :
 
-**Avant de lancer l'installation en production**, assurez-vous que votre domaine pointe vers votre serveur :
+#### **Étape 1 : Configuration DNS (OBLIGATOIRE)**
 
-1. **Ajoutez un enregistrement DNS :**
-   - Type : `A` 
-   - Nom : `@` (pour domaine principal) ou `sous-domaine` (pour sous-domaine)
-   - Valeur : `IP.DE.VOTRE.SERVEUR`
-   - TTL : 300 (optionnel)
+**⚠️ À FAIRE EN PREMIER** - Configurez votre DNS avant de continuer :
 
-2. **Exemples :**
+1. **Connectez-vous à votre registraire de domaine** (OVH, Cloudflare, GoDaddy, etc.)
+
+2. **Ajoutez un enregistrement DNS de type A :**
+   - **Type** : `A`
+   - **Nom** : `@` (pour domaine principal) ou `sous-domaine` (pour sous-domaine)
+   - **Valeur** : `IP_DE_VOTRE_SERVEUR`
+   - **TTL** : `300` ou `Auto`
+
+3. **Exemples de configuration :**
    ```
    # Domaine principal
    monsite.com → 192.168.1.100
    
-   # Sous-domaine  
+   # Sous-domaine
    rice.monsite.com → 192.168.1.100
    ```
 
-3. **Vérifiez la propagation :**
+4. **Vérifiez la propagation DNS :**
    ```bash
    nslookup votre-domaine.com
-   # ou
-   dig votre-domaine.com
+   # Doit retourner l'IP de votre serveur
    ```
 
-**⏱️ La propagation DNS peut prendre jusqu'à 24h.** Le certificat SSL ne pourra être généré qu'une fois le DNS configuré.
+**⏱️ Attendez la propagation DNS (5-30 minutes) avant de continuer.**
+
+#### **Étape 2 : Installation de l'application**
+
+```bash
+git clone https://github.com/machalex/ia-tech-rice.git
+cd ia-tech-rice
+cp .env.example .env
+```
+
+**Configuration du fichier `.env` pour la production :**
+```bash
+# .env
+DOMAIN=votre-domaine.com       # OBLIGATOIRE : votre vrai domaine
+MODE=production                # mode production avec SSL
+ADMIN_EMAIL=admin@votre-domaine.com  # OBLIGATOIRE : email pour SSL
+```
+
+#### **Étape 3 : Démarrage**
+
+```bash
+./setup.sh
+```
+
+**🌐 Accès : https://votre-domaine.com**
+
+**Commandes de gestion (production) :**
+```bash
+# Voir les logs
+docker-compose logs -f
+
+# Arrêter l'application
+docker-compose down
+
+# Redémarrer l'application
+docker-compose up -d
+```
+
+### Ce que fait `setup.sh`
+
+1. ✅ Vérifie que le fichier `.env` existe (sinon guide l'utilisateur)
+2. ✅ Lance la commande Docker appropriée selon le MODE
+3. ✅ Affiche l'URL d'accès et les commandes utiles
+
+**Les secrets sont intégrés dans docker-compose** - pas besoin de les générer !
+
 
 ## 📊 Fonctionnalités
 
@@ -95,14 +147,6 @@ Score = (Temps économisé × Impact × Faisabilité) / Difficulté
 | **Faisabilité** | Probabilité de réussite | 10-100% |
 | **Difficulté** | Effort de développement | 0.5-40h |
 
-## 🌐 Configuration du serveur
-
-### Prérequis
-- **Node.js** 16+ et npm
-- **Nginx** (installation automatique par le script)
-- **Git** pour le téléchargement
-- **Certbot** (optionnel, pour SSL)
-
 
 ## 📱 Utilisation
 
@@ -122,64 +166,6 @@ Score = (Temps économisé × Impact × Faisabilité) / Difficulté
 - **Impact** : Choisir l'impact organisationnel
 - **Faisabilité** : Estimer la probabilité de réussite
 - **Difficulté** : Évaluer l'effort de développement
-
-## 🔧 Commandes de Gestion
-
-### Mode Local (services de base)
-```bash
-# Voir les logs en temps réel
-docker-compose logs -f
-
-# Arrêter l'application
-docker-compose down
-
-# Redémarrer l'application
-docker-compose up -d
-
-# Reconfigurer (si vous modifiez .env)
-./setup.sh
-```
-
-### Mode Production (avec SSL)
-```bash
-# Voir les logs en temps réel
-docker-compose --profile production logs -f
-
-# Arrêter l'application
-docker-compose --profile production down
-
-# Redémarrer l'application
-docker-compose --profile production up -d
-```
-
-## ⚙️ Configuration Avancée
-
-### Variables automatiques
-
-Le script `setup.sh` génère automatiquement :
-- `DB_PASSWORD` : Mot de passe sécurisé (32 chars)
-- `JWT_SECRET` : Clé JWT sécurisée (64 chars)  
-- `FRONTEND_PORT`, `BACKEND_PORT`, `DB_PORT` : Ports par défaut
-
-### Personnalisation React (optionnel)
-
-```env
-# Dans .env
-REACT_APP_TITLE=RICE Tool - Mon Entreprise
-REACT_APP_DEFAULT_HOURLY_RATE=35
-```
-
-### Personnalisation
-
-#### Modifier les couleurs du thème
-Éditer `src/components/RiceInteractiveTool.js` :
-```javascript
-// Couleur principale (actuellement #24C4E1)
-style={{color: '#VOTRE_COULEUR'}}
-
-// Couleur secondaire (actuellement #CC33F9)
-style={{background: 'linear-gradient(135deg, #24C4E1, #VOTRE_COULEUR)'}}
-```
 
 
 ## 🔄 Mise à jour
@@ -269,26 +255,6 @@ add_header X-XSS-Protection "1; mode=block" always;
 │                 │                                    
 └─────────────────┘                                    
 ```
-
-## 🤝 Contribution
-
-Pour contribuer au projet :
-1. Fork le repository
-2. Créer une branche feature (`git checkout -b feature/nouvelle-fonctionnalite`)
-3. Commit les changements (`git commit -am 'Ajout nouvelle fonctionnalité'`)
-4. Push vers la branche (`git push origin feature/nouvelle-fonctionnalite`)
-5. Créer une Pull Request
-
-## 📞 Support
-
-Pour toute question ou problème :
-- Créer une [issue GitHub](https://github.com/votre-nom/rice-tool/issues)
-- Consulter la [documentation](https://github.com/votre-nom/rice-tool/wiki)
-
-## 📄 Licence
-
-Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
-
 ---
 
 **Développé avec ❤️ pour optimiser vos projets d'automatisation**

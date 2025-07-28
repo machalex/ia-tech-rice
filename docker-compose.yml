@@ -15,6 +15,8 @@ services:
     networks:
       - rice-network
     restart: unless-stopped
+    profiles:
+      - local
 
   # API Backend Node.js
   rice-backend:
@@ -32,6 +34,8 @@ services:
     networks:
       - rice-network
     restart: unless-stopped
+    profiles:
+      - local
 
   # Frontend React
   rice-frontend:
@@ -46,6 +50,8 @@ services:
     networks:
       - rice-network
     restart: unless-stopped
+    profiles:
+      - local
 
   # Reverse Proxy Nginx avec SSL (production seulement)
   rice-proxy:
@@ -62,8 +68,6 @@ services:
     networks:
       - rice-network
     restart: unless-stopped
-    profiles:
-      - production
 
   # Certbot pour SSL automatique (production seulement)
   rice-certbot:
@@ -89,8 +93,6 @@ services:
     networks:
       - rice-network
     restart: unless-stopped
-    profiles:
-      - production
 
 volumes:
   rice_db_data:

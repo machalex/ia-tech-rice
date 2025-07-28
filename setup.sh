@@ -39,11 +39,11 @@ echo ""
 echo "🚀 Lancement de l'application en mode: $MODE"
 
 if [ "$MODE" = "local" ]; then
+    echo "docker-compose --profile local up -d"
+    docker-compose --profile local up -d
+else
     echo "docker-compose up -d"
     docker-compose up -d
-else
-    echo "docker-compose --profile production up -d"
-    docker-compose --profile production up -d
 fi
 
 echo ""
@@ -52,14 +52,14 @@ if [ "$MODE" = "local" ]; then
     echo "🌐 Accès : http://localhost:8080"
     echo ""
     echo "🔧 Commandes utiles :"
-    echo "   docker-compose logs -f    # Logs"
-    echo "   docker-compose down       # Arrêter"  
-    echo "   docker-compose up -d      # Redémarrer"
+    echo "   docker-compose --profile local logs -f    # Logs"
+    echo "   docker-compose --profile local down       # Arrêter"  
+    echo "   docker-compose --profile local up -d      # Redémarrer"
 else
     echo "🌐 Accès : https://$DOMAIN"
     echo ""
     echo "🔧 Commandes utiles :"
-    echo "   docker-compose --profile production logs -f    # Logs"
-    echo "   docker-compose --profile production down       # Arrêter"
-    echo "   docker-compose --profile production up -d      # Redémarrer"
+    echo "   docker-compose logs -f    # Logs"
+    echo "   docker-compose down       # Arrêter"
+    echo "   docker-compose up -d      # Redémarrer"
 fi
